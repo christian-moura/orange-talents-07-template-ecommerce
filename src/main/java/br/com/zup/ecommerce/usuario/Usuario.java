@@ -10,7 +10,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false,unique = true)
-    private String login;
+    private String email;
     @Column(nullable = false)
     private String senha;
     @Column(nullable = false)
@@ -18,9 +18,9 @@ public class Usuario {
 
     public Usuario() { }
 
-    public Usuario(String login, String senha) {
-        this.login = login;
-        this.senha = senha;
+    public Usuario(String email, SenhaLimpa senha) {
+        this.email = email;
+        this.senha = senha.hash();
         this.dataCadastro = LocalDateTime.now();
     }
 }

@@ -9,7 +9,7 @@ public class UniqueValueValidator implements ConstraintValidator<UniqueValue, St
 
     private EntityManager manager;
     private Class<?> entity;
-    private String attribute = null;
+    private String attribute;
 
     public UniqueValueValidator(EntityManager manager) {
         this.manager = manager;
