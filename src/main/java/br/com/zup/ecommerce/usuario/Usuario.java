@@ -1,11 +1,13 @@
 package br.com.zup.ecommerce.usuario;
 
+import br.com.zup.ecommerce.produto.Produto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 public class Usuario implements UserDetails {
@@ -19,6 +21,9 @@ public class Usuario implements UserDetails {
     private String senha;
     @Column(nullable = false)
     private LocalDateTime dataCadastro;
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<Produto> produtos;
 
     public Usuario() { }
 

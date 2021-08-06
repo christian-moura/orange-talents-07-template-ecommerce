@@ -1,4 +1,4 @@
-package br.com.zup.ecommerce.handler;
+package br.com.zup.ecommerce.config.handler;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

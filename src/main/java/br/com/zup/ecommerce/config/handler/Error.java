@@ -1,4 +1,4 @@
-package br.com.zup.ecommerce.handler;
+package br.com.zup.ecommerce.config.handler;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.validation.FieldError;

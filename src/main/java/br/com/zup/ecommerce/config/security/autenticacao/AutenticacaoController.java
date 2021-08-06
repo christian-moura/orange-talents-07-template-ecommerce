@@ -20,7 +20,6 @@ import javax.validation.Valid;
 @RequestMapping("/auth")
 public class AutenticacaoController {
 
-
     private AuthenticationManager authenticationManager;
     private TokenService tokenService;
 
