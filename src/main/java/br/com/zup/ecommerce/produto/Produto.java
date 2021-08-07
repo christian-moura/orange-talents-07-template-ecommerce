@@ -2,6 +2,7 @@ package br.com.zup.ecommerce.produto;
 
 import br.com.zup.ecommerce.categoria.Categoria;
 import br.com.zup.ecommerce.produto.caracteristica.Caracteristica;
+import br.com.zup.ecommerce.produto.imagem.ImagemProduto;
 import br.com.zup.ecommerce.usuario.Usuario;
 import org.hibernate.validator.constraints.Length;
 
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Produto {
@@ -43,6 +45,9 @@ public class Produto {
     @JoinColumn(name = "produto_id")
     private Set<Caracteristica> caracteristicas = new HashSet<>();
 
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.MERGE, fetch= FetchType.EAGER)
+    private Set<ImagemProduto> imagens = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
 
@@ -60,5 +65,13 @@ public class Produto {
         this.categoria = categoria;
         this.caracteristicas = caracteristica;
         this.usuario = usuario;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void inserirImagens(Set<String> urls){
+       this.imagens.addAll(urls.stream().map(url -> new ImagemProduto(url, this)).collect(Collectors.toSet()));
     }
 }

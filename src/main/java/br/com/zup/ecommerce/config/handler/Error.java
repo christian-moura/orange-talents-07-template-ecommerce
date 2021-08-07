@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.validation.FieldError;
 
 public class Error {
+
     @JsonProperty
     private String campo;
+
     @JsonProperty
     private String mensagem;
 
@@ -13,6 +15,11 @@ public class Error {
         this.campo = campo;
         this.mensagem = mensagem;
     }
+
+    public Error(String mensagem) {
+        this.mensagem = mensagem;
+    }
+
     public Error(FieldError error) {
         this.campo = error.getField();
         this.mensagem = error.getDefaultMessage();

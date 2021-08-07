@@ -18,6 +18,7 @@ public class Categoria {
     @OneToMany(mappedBy = "categoria")
     private List<Produto> produtos;
 
+    @Deprecated
     public Categoria() { }
 
     public Categoria(String nome) {
@@ -27,17 +28,5 @@ public class Categoria {
     public Categoria(String nome, Categoria categoriaMae) {
         this.nome = nome;
         this.categoriaMae = categoriaMae;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Categoria getCategoriaMae() {
-        return categoriaMae;
     }
 }

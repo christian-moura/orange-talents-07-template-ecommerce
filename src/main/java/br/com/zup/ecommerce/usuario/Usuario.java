@@ -25,6 +25,7 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<Produto> produtos;
 
+    @Deprecated
     public Usuario() { }
 
     public Usuario(String email, SenhaLimpa senha) {
