@@ -3,6 +3,8 @@ package br.com.zup.ecommerce.produto;
 import br.com.zup.ecommerce.config.handler.exception.PersonalizadaException;
 import br.com.zup.ecommerce.produto.imagem.ImagemProdutoRequest;
 import br.com.zup.ecommerce.produto.imagem.UploaderFake;
+import br.com.zup.ecommerce.produto.opiniao.Opiniao;
+import br.com.zup.ecommerce.produto.opiniao.OpiniaoRequest;
 import br.com.zup.ecommerce.usuario.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,4 +51,17 @@ public class ProdutoController {
         entityManager.merge(produto);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{id}/opiniao")
+    @Transactional
+    public ResponseEntity<?> inserirOpiniaoProduto(@Valid @RequestBody OpiniaoRequest opiniaoRequest,
+                                                  @PathVariable Long id,
+                                                  @AuthenticationPrincipal Usuario usuario){
+        Produto produto = entityManager.find(Produto.class,id);
+        if(produto==null) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
+        Opiniao opiniao = opiniaoRequest.toOpiniao(usuario,produto);
+        entityManager.persist(opiniao);
+        return ResponseEntity.ok().build();
+    }
 }
+

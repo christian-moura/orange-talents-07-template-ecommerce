@@ -20,7 +20,7 @@ public class Handler {
 
     @ExceptionHandler(PersonalizadaException.class)
     public ResponseEntity<Error> PersonalizadaException(PersonalizadaException e){
-        Error error = new Error(e.getCampo(), e.getMessage() );
+        Error error = new Error(e.getCampo(), e.getMessage());
         return ResponseEntity.status(e.getStatus()).body(error);
     }
 
