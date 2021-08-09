@@ -86,4 +86,28 @@ public class Produto {
     public void inserirImagens(Set<String> urls){
        this.imagens.addAll(urls.stream().map(url -> new ImagemProduto(url, this)).collect(Collectors.toSet()));
     }
+
+    public BigDecimal getValor() {
+        return valor;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public Set<Caracteristica> getCaracteristicas() {
+        return caracteristicas;
+    }
+
+    public Set<ImagemProduto> getImagens() {
+        return imagens;
+    }
+
+    public Set<Opiniao> getOpinioes() {
+        return opinioes;
+    }
+
+    public Set<Pergunta> getPerguntas() {
+        return perguntas;
+    }
 }

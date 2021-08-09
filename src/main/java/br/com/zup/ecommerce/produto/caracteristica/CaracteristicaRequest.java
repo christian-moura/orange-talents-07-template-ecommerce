@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
-public class CaracteristicasRequest {
+public class CaracteristicaRequest {
 
    @JsonProperty @NotBlank
     private String nome;
@@ -21,7 +21,7 @@ public class CaracteristicasRequest {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CaracteristicasRequest that = (CaracteristicasRequest) o;
+        CaracteristicaRequest that = (CaracteristicaRequest) o;
         return Objects.equals(nome, that.nome);
     }
 

@@ -1,7 +1,7 @@
 package br.com.zup.ecommerce.produto;
 
 import br.com.zup.ecommerce.categoria.Categoria;
-import br.com.zup.ecommerce.produto.caracteristica.CaracteristicasRequest;
+import br.com.zup.ecommerce.produto.caracteristica.CaracteristicaRequest;
 import br.com.zup.ecommerce.usuario.Usuario;
 import br.com.zup.ecommerce.validations.ExistValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,11 +33,11 @@ public class ProdutoRequest {
     @JsonProperty @NotNull
     private Long categoria;
     @JsonProperty @NotNull @Valid @Size(min = 3) @UniqueElements(message = "Não é possível inserir características iguais.")
-    private List<CaracteristicasRequest> caracteristicas;
+    private List<CaracteristicaRequest> caracteristicas;
 
     public Produto toProduto(EntityManager entityManager, Usuario usuario){
         Categoria categoria = entityManager.find(Categoria.class,this.categoria);
         return new Produto(this.nome,this.valor, this.quantidade,this.descricao,
-                categoria, caracteristicas.stream().map(CaracteristicasRequest::toCaracteristica).collect(Collectors.toSet()), usuario);
+                categoria, caracteristicas.stream().map(CaracteristicaRequest::toCaracteristica).collect(Collectors.toSet()), usuario);
     }
 }

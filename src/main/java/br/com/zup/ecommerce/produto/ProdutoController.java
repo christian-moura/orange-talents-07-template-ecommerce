@@ -80,5 +80,13 @@ public class ProdutoController {
         email.enviaPergunta(pergunta);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{id}/detalhes")
+    public ResponseEntity<?> detalhesProduto(@PathVariable Long id){
+        Produto produto = entityManager.find(Produto.class,id);
+        if(produto==null) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
+        ProdutoResponse produtoResponse = new ProdutoResponse(produto);
+        return ResponseEntity.ok().body(produtoResponse);
+    }
 }
 
