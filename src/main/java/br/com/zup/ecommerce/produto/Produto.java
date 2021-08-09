@@ -4,6 +4,7 @@ import br.com.zup.ecommerce.categoria.Categoria;
 import br.com.zup.ecommerce.produto.caracteristica.Caracteristica;
 import br.com.zup.ecommerce.produto.imagem.ImagemProduto;
 import br.com.zup.ecommerce.produto.opiniao.Opiniao;
+import br.com.zup.ecommerce.produto.pergunta.Pergunta;
 import br.com.zup.ecommerce.usuario.Usuario;
 import org.hibernate.validator.constraints.Length;
 
@@ -52,6 +53,9 @@ public class Produto {
     @OneToMany(mappedBy = "produto", cascade = CascadeType.MERGE, fetch= FetchType.EAGER)
     private Set<Opiniao> opinioes = new HashSet<>();
 
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.MERGE, fetch= FetchType.EAGER)
+    private Set<Pergunta> perguntas = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
 
@@ -73,6 +77,10 @@ public class Produto {
 
     public Usuario getUsuario() {
         return usuario;
+    }
+
+    public String getNome() {
+        return nome;
     }
 
     public void inserirImagens(Set<String> urls){

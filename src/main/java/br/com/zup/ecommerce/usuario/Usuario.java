@@ -2,6 +2,7 @@ package br.com.zup.ecommerce.usuario;
 
 import br.com.zup.ecommerce.produto.Produto;
 import br.com.zup.ecommerce.produto.opiniao.Opiniao;
+import br.com.zup.ecommerce.produto.pergunta.Pergunta;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -28,6 +29,9 @@ public class Usuario implements UserDetails {
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
     private List<Opiniao> opinoes;
+
+    @OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY)
+    private List<Pergunta> perguntas;
 
 
     @Deprecated
