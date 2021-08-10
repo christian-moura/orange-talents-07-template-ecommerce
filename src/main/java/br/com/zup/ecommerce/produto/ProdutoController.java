@@ -1,5 +1,7 @@
 package br.com.zup.ecommerce.produto;
 
+import br.com.zup.ecommerce.compra.Compra;
+import br.com.zup.ecommerce.compra.CompraRequest;
 import br.com.zup.ecommerce.config.handler.exception.PersonalizadaException;
 import br.com.zup.ecommerce.email.Email;
 import br.com.zup.ecommerce.produto.imagem.ImagemProdutoRequest;
@@ -19,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/produto")
@@ -87,6 +90,25 @@ public class ProdutoController {
         if(produto==null) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
         ProdutoResponse produtoResponse = new ProdutoResponse(produto);
         return ResponseEntity.ok().body(produtoResponse);
+    }
+
+    @PostMapping("/{id}/compra")
+    @Transactional
+    public ResponseEntity<?> comprarProduto(@Valid @RequestBody CompraRequest compraRequest ,
+                                            @PathVariable Long id,
+                                            @AuthenticationPrincipal Usuario usuario){
+        Produto produto = entityManager.find(Produto.class,id);
+        if(produto==null) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
+        if(!produto.abateEstoque(compraRequest.getQuantidade())) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"quantidade","Estoque indisponível.");
+        Compra compra = compraRequest.toCompra(produto,usuario);
+        entityManager.persist(compra);
+        email.novaCompra(compra);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create("https://"+compra.getGatewayPagamento()
+                        +".com?buyerId="+compra.getId()
+                        +"+&redirectUrl=http://localhost:8080/api/produto/"+
+                        compra.getId()+"/compra-concluida"))
+                .build();
     }
 }
 

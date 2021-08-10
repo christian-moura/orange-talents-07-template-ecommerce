@@ -1,6 +1,7 @@
 package br.com.zup.ecommerce.produto;
 
 import br.com.zup.ecommerce.categoria.Categoria;
+import br.com.zup.ecommerce.compra.Compra;
 import br.com.zup.ecommerce.produto.caracteristica.Caracteristica;
 import br.com.zup.ecommerce.produto.imagem.ImagemProduto;
 import br.com.zup.ecommerce.produto.opiniao.Opiniao;
@@ -56,6 +57,9 @@ public class Produto {
     @OneToMany(mappedBy = "produto", cascade = CascadeType.MERGE, fetch= FetchType.EAGER)
     private Set<Pergunta> perguntas = new HashSet<>();
 
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.MERGE, fetch= FetchType.EAGER)
+    private Set<Compra> compras = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
 
@@ -83,10 +87,6 @@ public class Produto {
         return nome;
     }
 
-    public void inserirImagens(Set<String> urls){
-       this.imagens.addAll(urls.stream().map(url -> new ImagemProduto(url, this)).collect(Collectors.toSet()));
-    }
-
     public BigDecimal getValor() {
         return valor;
     }
@@ -109,5 +109,21 @@ public class Produto {
 
     public Set<Pergunta> getPerguntas() {
         return perguntas;
+    }
+
+    public Integer getQuantidade() {
+        return quantidade;
+    }
+
+    public void inserirImagens(Set<String> urls){
+        this.imagens.addAll(urls.stream().map(url -> new ImagemProduto(url, this)).collect(Collectors.toSet()));
+    }
+
+    public boolean abateEstoque(Integer quantidadeSolicitada){
+        if(this.quantidade>=quantidadeSolicitada){
+            this.quantidade-=quantidadeSolicitada;
+            return true;
+        }
+        return false;
     }
 }
