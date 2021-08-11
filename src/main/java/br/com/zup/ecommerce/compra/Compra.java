@@ -1,12 +1,17 @@
 package br.com.zup.ecommerce.compra;
 
+import br.com.zup.ecommerce.compra.transacao.Transacao;
+import br.com.zup.ecommerce.config.handler.exception.PersonalizadaSingleMessageException;
 import br.com.zup.ecommerce.produto.Produto;
 import br.com.zup.ecommerce.usuario.Usuario;
+import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Compra {
@@ -35,7 +40,10 @@ public class Compra {
 
     @Enumerated
     @NotNull
-    private StatusPagamento statusPagamento;
+    private StatusCompra statusCompra;
+
+    @OneToMany(mappedBy = "compra", cascade = CascadeType.MERGE, fetch= FetchType.EAGER)
+    private Set<Transacao> transacoes = new HashSet<>();
 
     @Deprecated
     public Compra() {
@@ -49,7 +57,7 @@ public class Compra {
         this.usuario = usuario;
         this.produto = produto;
         this.gatewayPagamento = gatewayPagamento;
-        this.statusPagamento = StatusPagamento.INICIADA;
+        this.statusCompra = StatusCompra.INICIADA;
     }
 
     public Long getId() {
@@ -76,7 +84,14 @@ public class Compra {
         return gatewayPagamento;
     }
 
-    public StatusPagamento getStatusPagamento() {
-        return statusPagamento;
+    public StatusCompra getStatusCompra() {
+        return statusCompra;
+    }
+
+    public void processaTransacao(Transacao transacao){
+        if(this.statusCompra.equals(StatusCompra.FINALIZADA)) throw new PersonalizadaSingleMessageException(HttpStatus.BAD_REQUEST,"Processamento bloqueado. Compra já está finalizada com pagamento efetuado");
+        this.transacoes.add(transacao);
+        if(transacao.tracacaoSucedida()) this.statusCompra = StatusCompra.FINALIZADA;
+        else this.statusCompra =StatusCompra.AGUARDANDO_PAGAMENTO;
     }
 }

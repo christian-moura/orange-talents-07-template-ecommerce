@@ -1,6 +1,7 @@
 package br.com.zup.ecommerce.config.handler;
 
-import br.com.zup.ecommerce.config.handler.exception.PersonalizadaException;
+import br.com.zup.ecommerce.config.handler.exception.PersonalizadaFieldsException;
+import br.com.zup.ecommerce.config.handler.exception.PersonalizadaSingleMessageException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,21 +13,27 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class Handler {
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<Error>> MethodArgumentNotValid(MethodArgumentNotValidException e){
-        List<Error> erros = e.getFieldErrors().stream().map(Error::new).collect(Collectors.toList());
+    public ResponseEntity<List<ErrorFieldsBody>> MethodArgumentNotValid(MethodArgumentNotValidException e){
+        List<ErrorFieldsBody> erros = e.getFieldErrors().stream().map(ErrorFieldsBody::new).collect(Collectors.toList());
         return ResponseEntity.badRequest().body(erros);
     }
 
-    @ExceptionHandler(PersonalizadaException.class)
-    public ResponseEntity<Error> PersonalizadaException(PersonalizadaException e){
-        Error error = new Error(e.getCampo(), e.getMessage());
+    @ExceptionHandler(PersonalizadaFieldsException.class)
+    public ResponseEntity<ErrorFieldsBody> PersonalizadaFields(PersonalizadaFieldsException e){
+        ErrorFieldsBody error = new ErrorFieldsBody(e.getCampo(), e.getMessage());
+        return ResponseEntity.status(e.getStatus()).body(error);
+    }
+    @ExceptionHandler(PersonalizadaSingleMessageException.class)
+    public ResponseEntity<ErrorSingleMessage> PersonalizadaSingleMessage(PersonalizadaSingleMessageException e){
+        ErrorSingleMessage error = new ErrorSingleMessage(e.getMessage());
         return ResponseEntity.status(e.getStatus()).body(error);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<?> ResponseStatus(ResponseStatusException e){
-        Error error = new Error(e.getMessage());
+        ErrorFieldsBody error = new ErrorFieldsBody(e.getMessage());
         return ResponseEntity.status(e.getStatus()).body(error);
     }
 }

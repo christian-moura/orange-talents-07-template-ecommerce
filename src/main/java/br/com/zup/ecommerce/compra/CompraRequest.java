@@ -1,8 +1,10 @@
 package br.com.zup.ecommerce.compra;
 
+import br.com.zup.ecommerce.config.handler.exception.PersonalizadaFieldsException;
 import br.com.zup.ecommerce.produto.Produto;
 import br.com.zup.ecommerce.usuario.Usuario;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.http.HttpStatus;
 
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
@@ -19,10 +21,7 @@ public class CompraRequest {
     private GatewayPagamento gatewayPagamento;
 
     public Compra toCompra(Produto produto, Usuario usuario){
+        if(!produto.abateEstoque(this.quantidade)) throw new PersonalizadaFieldsException(HttpStatus.NOT_FOUND,"quantidade","Estoque indisponível.");
         return new Compra(this.quantidade,produto.getValor(),usuario,produto, this.gatewayPagamento);
-    }
-
-    public Integer getQuantidade() {
-        return quantidade;
     }
 }

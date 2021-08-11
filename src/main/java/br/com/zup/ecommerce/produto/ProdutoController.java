@@ -1,8 +1,6 @@
 package br.com.zup.ecommerce.produto;
 
-import br.com.zup.ecommerce.compra.Compra;
-import br.com.zup.ecommerce.compra.CompraRequest;
-import br.com.zup.ecommerce.config.handler.exception.PersonalizadaException;
+import br.com.zup.ecommerce.config.handler.exception.PersonalizadaFieldsException;
 import br.com.zup.ecommerce.email.Email;
 import br.com.zup.ecommerce.produto.imagem.ImagemProdutoRequest;
 import br.com.zup.ecommerce.produto.imagem.UploaderFake;
@@ -21,7 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-import java.net.URI;
 
 @RestController
 @RequestMapping("/api/produto")
@@ -52,7 +49,7 @@ public class ProdutoController {
                                                   @PathVariable Long id,
                                                   @AuthenticationPrincipal Usuario usuario){
         Produto produto = entityManager.find(Produto.class,id);
-        if(produto==null) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
+        if(produto==null) throw new PersonalizadaFieldsException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
         if(!produto.getUsuario().getId().equals(usuario.getId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado. Usuário sem permissão para o recurso.");
         produto.inserirImagens(uploaderFake.enviarFotos(imagemProdutoRequest.getImagens()));
@@ -66,7 +63,7 @@ public class ProdutoController {
                                                   @PathVariable Long id,
                                                   @AuthenticationPrincipal Usuario usuario){
         Produto produto = entityManager.find(Produto.class,id);
-        if(produto==null) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
+        if(produto==null) throw new PersonalizadaFieldsException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
         Opiniao opiniao = opiniaoRequest.toOpiniao(usuario,produto);
         entityManager.persist(opiniao);
         return ResponseEntity.ok().build();
@@ -77,7 +74,7 @@ public class ProdutoController {
                                                     @PathVariable Long id,
                                                     @AuthenticationPrincipal Usuario usuario){
         Produto produto = entityManager.find(Produto.class,id);
-        if(produto==null) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
+        if(produto==null) throw new PersonalizadaFieldsException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
         Pergunta pergunta = perguntaRequest.toPergunta(usuario,produto);
         entityManager.persist(pergunta);
         email.enviaPergunta(pergunta);
@@ -87,28 +84,9 @@ public class ProdutoController {
     @GetMapping("/{id}/detalhes")
     public ResponseEntity<?> detalhesProduto(@PathVariable Long id){
         Produto produto = entityManager.find(Produto.class,id);
-        if(produto==null) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
+        if(produto==null) throw new PersonalizadaFieldsException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
         ProdutoResponse produtoResponse = new ProdutoResponse(produto);
         return ResponseEntity.ok().body(produtoResponse);
-    }
-
-    @PostMapping("/{id}/compra")
-    @Transactional
-    public ResponseEntity<?> comprarProduto(@Valid @RequestBody CompraRequest compraRequest ,
-                                            @PathVariable Long id,
-                                            @AuthenticationPrincipal Usuario usuario){
-        Produto produto = entityManager.find(Produto.class,id);
-        if(produto==null) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"id","Produto inexistente.");
-        if(!produto.abateEstoque(compraRequest.getQuantidade())) throw new PersonalizadaException(HttpStatus.NOT_FOUND,"quantidade","Estoque indisponível.");
-        Compra compra = compraRequest.toCompra(produto,usuario);
-        entityManager.persist(compra);
-        email.novaCompra(compra);
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create("https://"+compra.getGatewayPagamento()
-                        +".com?buyerId="+compra.getId()
-                        +"+&redirectUrl=http://localhost:8080/api/produto/"+
-                        compra.getId()+"/compra-concluida"))
-                .build();
     }
 }
 

@@ -4,7 +4,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD,ElementType.PARAMETER, ElementType.TYPE_PARAMETER,ElementType.CONSTRUCTOR, ElementType.LOCAL_VARIABLE})
 @Constraint(validatedBy = ExistValueValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
